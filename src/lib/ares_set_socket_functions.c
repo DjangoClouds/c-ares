@@ -550,7 +550,7 @@ static ares_ssize_t legacycb_asendto(ares_socket_t sock, const void *buffer,
   if (channel->legacy_sock_funcs != NULL &&
       channel->legacy_sock_funcs->asendv != NULL) {
     struct iovec vec;
-    vec.iov_base = (void *)((size_t)buffer); /* Cast off const */
+    vec.iov_base = __DECONST(void *, buffer); /* Cast off const */
     vec.iov_len  = length;
     return channel->legacy_sock_funcs->asendv(
       sock, &vec, 1, channel->legacy_sock_funcs_cb_data);

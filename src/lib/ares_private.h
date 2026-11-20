@@ -795,4 +795,8 @@ ares_status_t ares_event_thread_init(ares_channel_t *channel);
 #  define HOSTENT_LENGTH_TYPE   int
 #endif
 
+#ifndef __DECONST
+#define __DECONST(type, var) ((type)(uintptr_t)(const void *)(var))
+#endif
+
 #endif /* __ARES_PRIVATE_H */

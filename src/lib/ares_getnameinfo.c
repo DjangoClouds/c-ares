@@ -428,7 +428,7 @@ static char *ares_striendstr(const char *s1, const char *s2)
     }
   }
   /* Cast off const */
-  return (char *)((size_t)c1_begin);
+  return __DECONST(char *, c1_begin);
 }
 
 ares_bool_t ares_is_onion_domain(const char *name)

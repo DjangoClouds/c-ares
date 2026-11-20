@@ -499,7 +499,7 @@ const ares_dns_rr_t *
   ares_dns_record_rr_get_const(const ares_dns_record_t *dnsrec,
                                ares_dns_section_t sect, size_t idx)
 {
-  return ares_dns_record_rr_get((void *)((size_t)dnsrec), sect, idx);
+  return ares_dns_record_rr_get(__DECONST(void *, dnsrec), sect, idx);
 }
 
 const char *ares_dns_rr_get_name(const ares_dns_rr_t *rr)
@@ -741,8 +741,8 @@ static const void *ares_dns_rr_data_ptr_const(const ares_dns_rr_t *dns_rr,
                                               const size_t       **lenptr)
 {
   /* We're going to cast off the const */
-  return ares_dns_rr_data_ptr((void *)((size_t)dns_rr), key,
-                              (void *)((size_t)lenptr));
+  return ares_dns_rr_data_ptr(__DECONST(void *, dns_rr), key,
+                              __DECONST(void *, lenptr));
 }
 
 const struct in_addr *ares_dns_rr_get_addr(const ares_dns_rr_t *dns_rr,
