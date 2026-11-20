@@ -114,7 +114,10 @@ static void main_loop(ares_channel_t **channel)
         if (nfds == 0)
           break;
         tvp = ares_timeout (*channel, NULL, &tv);
-        count = select (nfds, &readers, &writers, NULL, tvp);
+        errno = 0;
+        do {
+          count = select (nfds, &readers, &writers, NULL, tvp);
+        } while (count == -1 && errno == EINTR);
         ares_process (*channel, &readers, &writers);
       }
   }

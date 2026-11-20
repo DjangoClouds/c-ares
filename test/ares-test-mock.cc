@@ -4245,6 +4245,7 @@ static void ReconfigureChannelCallback(void *arg, ares_status_t status,
 }
 
 TEST_P(MockUDPChannelTest, ReconfigureInCallbackStaleRequeueServer) {
+  int res;
   DNSPacket okrsp;
   okrsp.set_response().set_aa()
     .add_question(new DNSQuestion("www.google.com", T_A))
@@ -4287,7 +4288,11 @@ TEST_P(MockUDPChannelTest, ReconfigureInCallbackStaleRequeueServer) {
         nfds = (int)fd + 1;
       }
     }
-    if (select(nfds, &r, nullptr, nullptr, &tv) <= 0) {
+    errno = 0;
+    do {
+      res = select(nfds, &r, nullptr, nullptr, &tv);
+    } while (res == -1 && errno == EINTR);
+    if (res <= 0) {
       break;
     }
     for (ares_socket_t fd : server_fds) {
@@ -4301,10 +4306,13 @@ TEST_P(MockUDPChannelTest, ReconfigureInCallbackStaleRequeueServer) {
     fd_set         writers;
     struct timeval tv = {0, 0};
     int            nfds;
+    int            res;
     FD_ZERO(&readers);
     FD_ZERO(&writers);
     nfds = ares_fds(channel_, &readers, &writers);
-    select(nfds, &readers, &writers, nullptr, &tv);
+    do {
+      res = select(nfds, &readers, &writers, nullptr, &tv);
+    } while (res == -1 && errno == EINTR);
     ares_process(channel_, &readers, &writers);
   }
 

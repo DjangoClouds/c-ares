@@ -125,7 +125,10 @@ static size_t ares_evsys_select_wait(ares_event_thread_t *e,
     tout       = &tv;
   }
 
-  rv = select(nfds, &read_fds, &write_fds, &except_fds, tout);
+  errno = 0;
+  do {
+    rv = select(nfds, &read_fds, &write_fds, &except_fds, tout);
+  } while (rv == -1 && errno == EINTR);
   if (rv > 0) {
     for (i = 0; i < num_fds; i++) {
       ares_event_t      *ev;

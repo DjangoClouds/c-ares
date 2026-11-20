@@ -189,7 +189,10 @@ int         main(int argc, char **argv)
     if (tvp == NULL) {
       break;
     }
-    res = select(nfds, &read_fds, &write_fds, NULL, tvp);
+    errno = 0;
+    do {
+      res = select(nfds, &read_fds, &write_fds, NULL, tvp);
+    } while (res == -1 && errno == EINTR);
     if (-1 == res) {
       break;
     }

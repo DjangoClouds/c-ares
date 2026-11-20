@@ -322,7 +322,10 @@ void ProcessWork(ares_channel_t *channel,
       }
     }
 
-    count = select(nfds, &readers, &writers, nullptr, tv_select);
+    errno = 0;
+    do {
+      count = select(nfds, &readers, &writers, nullptr, tv_select);
+    } while (count == -1 && errno == EINTR);
     if (count < 0) {
       fprintf(stderr, "select() failed, errno %d\n", errno);
       return;
@@ -980,6 +983,7 @@ void MockEventThreadOptsTest::Process(unsigned int cancel_ms) {
     //if (verbose) std::cerr << "pending queries: " << ares_queue_active_queries(channel_) << std::endl;
 
     int nfds = 0;
+    int res = 0;
     fd_set readers;
 
     struct timeval  tv;
@@ -1014,7 +1018,10 @@ void MockEventThreadOptsTest::Process(unsigned int cancel_ms) {
       }
     }
 
-    if (select(nfds, &readers, nullptr, nullptr, &tv) < 0) {
+    do {
+      res = select(nfds, &readers, nullptr, nullptr, &tv);
+    } while (res == -1 && errno == EINTR);
+    if (res < 0) {
       fprintf(stderr, "select() failed, errno %d\n", errno);
       return;
     }
